@@ -11,13 +11,11 @@ int main(int argc, char* argv[]) {
 
     cin>>size;
 
-    while(cin){
-        cin>>edge.first>>edge.second;
+    while(cin>>edge.first>>edge.second){
         edges.push_back(edge);
     }
 
     Graph g(size,edges);
-
     for(auto &e: g.getExtensiveBridges()){
         cout<<e.first<<" "<<e.second<<endl;
     }

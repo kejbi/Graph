@@ -10,24 +10,16 @@
 #include <stdexcept>
 
 class Graph{
-    class Vertex{
-        size_t id;
-        std::vector<size_t> neighbours;
-    };
 public:
     using adjVector = std::vector<std::vector<size_t>>;
     using edge = std::pair<size_t,size_t>;
     using edgesVector = std::vector<std::pair<size_t,size_t>>;
-    using verticesVector = std::vector<Vertex>;
 private:
-
-
     adjVector adjacency;
-    verticesVector vertices;
     edgesVector edges;
     size_t size;
 
-    int dfs(size_t startVertex, bool visited[]){
+    size_t dfs(size_t startVertex, bool visited[]){
         visited[startVertex]=true;
         size_t counter = 1;
         for(auto neighbour: adjacency[startVertex]){
@@ -38,17 +30,20 @@ private:
         return counter;
     }
 
+
     bool isExtensiveBridge(edge& edge) {
-        size_t startVertex = -1;
+        bool foundVertex = false;
+        size_t startVertex=0;
 
         for (size_t i = 0; i < size; ++i) {
             if (i != edge.first && i != edge.second) {
+                foundVertex=true;
                 startVertex = i;
                 break;
             }
         }
 
-        if (startVertex == -1) return false;
+        if (!foundVertex) return false;
         bool visited[size] = {false};
         visited[edge.first]=true;
         visited[edge.second]=true;
@@ -95,11 +90,44 @@ public:
     }
 
     void pop(size_t vertex){
-
+        auto it = adjacency.begin();
+        adjacency.erase(it+vertex);
+        for(auto &item: adjacency){
+            auto i = item.begin();
+            while(i!=item.end()){
+                if(*i==vertex){
+                    i=item.erase(i);
+                    continue;
+                }
+                if(*i>vertex){
+                    --(*i);
+                }
+                ++i;
+            }
+        }
+        auto i = edges.begin();
+        while(i!=edges.end()){
+            if((*i).first == vertex || (*i).second == vertex){
+                i=edges.erase(i);
+                continue;
+            }
+            if((*i).first > vertex){
+                --((*i).first);
+            }
+            if((*i).second > vertex){
+                --((*i).second);
+            }
+            ++i;
+        }
+        --size;
     }
 
     size_t getSize(){
         return size;
+    }
+
+    edgesVector& getEdges(){
+        return edges;
     }
 
     adjVector& getAdjacency(){
